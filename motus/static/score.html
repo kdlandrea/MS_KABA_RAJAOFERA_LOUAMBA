@@ -32,10 +32,11 @@
     <script>
         //localstorage
         //localStorage.setItem("score", "500");
-        localStorage.clear();
+        //localStorage.clear();
         //localStorage.removeItem("score");
         if (localStorage.length > 0) {
             $("#score").html(localStorage.score)
+            $("#average").html(localStorage.average)
         } 
         else {
             $("#score").html("0") // change value
