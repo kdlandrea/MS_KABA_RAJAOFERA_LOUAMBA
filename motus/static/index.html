@@ -48,8 +48,8 @@
                 word_list[i] = mot_array[i];
             }
         });
-        var nb_tentative = 1;
-        score=0
+        var nb_tentative = 0;
+        score=  localStorage.score || 0;
         list_tentative = []
 
         document.querySelector('button')
@@ -109,50 +109,36 @@
                 }
 
                 ecriture(test_array)
+                nb_tentative+=1;
                 bons=compare(mot_array, test_array, word_list, nb_tentative);
                 
                 if(bons == mot_array.length){
                     alert("Bravo ! Vous avez trouvé le mot du jour !");
                     score++;
                     localStorage.setItem("score", score)
-                    if (!localStorage.getItem("average")) {//si average est vide
-
-                        nb_parties = list_tentative.length || 1 ;
-                        average = nb_tentative/nb_parties
-                    }
-                    else{
-                        old_list = localStorage.getItem("list_tentative")
-                        sum_old_nb_tentative = Array.isArray(old_list)
-                            ? old_list.reduce((partialSum, a) => partialSum + a, 0)
-                            : 0;
-                        //old_list.reduce((partialSum, a) => partialSum + a, 0);
-                        nb_parties = list_tentative.length || 1 ;
-                        average = ((nb_tentative+sum_old_nb_tentative)/nb_parties).toFixed(2)//2 chiffres ap la virgule
-                    }
-                    localStorage.setItem("average", average)
                     list_tentative = JSON.parse(localStorage.getItem('list_tentative')) || [];
                     list_tentative.push(nb_tentative)
                     localStorage.setItem("list_tentative", JSON.stringify(list_tentative))
+                    list_tentative = JSON.parse(localStorage.getItem('list_tentative'));
+
+                    if (!localStorage.getItem("average")) {//si average est vide
+                        sum_tentative = list_tentative[0]
+                    }
+                    else{
+                        //sommer toutes les tentatives depuis le début
+                        sum_old_nb_tentative = Array.isArray(list_tentative)
+                            ? list_tentative.reduce((partialSum, a) => partialSum + a, 0)
+                            : 0;
+                        //console.log("Nb tentatives d'avant = "+ sum_old_nb_tentative)
+                        sum_tentative = sum_old_nb_tentative
+                    }
+                    nb_parties = list_tentative.length || 1 ;
+                    average = ((sum_tentative)/nb_parties).toFixed(2)//2 chiffres ap la virgule
+                    localStorage.setItem("average", average)
                 }
                 else if(nb_tentative>5){
                     alert("Perdu ! Tentatives max dépassées");
                 }
-                else{
-                    nb_tentative+=1;
-                }
-                
-                //list_tentative = [list_tentative, ...[object]];
-                
-
-                // list_tentative = localStorage.list_tentative
-                // if(typeof list_tentative === 'undefined'){
-                //     list_tentative = []
-                // }
-                // else{
-                //     list_tentative = JSON.parse(localStorage.list_tentative)
-                //     list_tentative.append(nb_tentative)
-                //     //list_tentative[score]=nb_tentative
-                // }
             });
             
             
