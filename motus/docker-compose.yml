@@ -1,0 +1,29 @@
+version: '2.1'
+services:
+  mydb: 
+    image: mysql
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql/data
+    environnement: 
+      MYSQL_PASSWORD : pwd
+      MYSQL_USER : admin
+      POSTGRES_DB: myDB
+    healthcheck:
+      test: mysql -u "$$POSTGRES_USER"
+      interval: 10s
+      timeout: 2s
+      retries: 10
+    myapp:
+      depends_on:
+        mydb:
+          condition: service_healthy
+      image: mynode
+      ports:
+        - "3000:3000"
+      restart: always
+      volumes:
+        - data:/usr/app/data
+volumes:
+  db_data: {}
+  nc_data: {}
