@@ -31,11 +31,11 @@
     </body>
     <script>
         //localstorage
-        //localStorage.setItem("score", "500");
-        localStorage.clear();
+        localStorage.setItem("score", "500");
+        //localStorage.clear();
         //localStorage.removeItem("score");
         if (localStorage.length > 0) {
-            $("#score").html(localStorage.score)
+            $("#score").html(localStorage.getItem('score'))
         } 
         else {
             $("#score").html("0") // change value
