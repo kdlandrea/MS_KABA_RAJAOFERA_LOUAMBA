@@ -3,11 +3,11 @@ const fs = require('fs'); //file system
 const { userInfo } = require('os');
 const app = express()
 const port = 3000
+const session = require('express-session')
 
-// const port = process.env.PORT || 3000 
-// const os = require('os');
 
 app.use(express.static('static'));
+app.use(express.urlencoded({extended:false}));
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -22,15 +22,23 @@ const myusername = 'user1'
 const mypassword = 'mypassword'
 
 // a variable to save a session
-var session;
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}))
+
+app.get('/session',(req,res)=>{
+  res.send(JSON.stringify(req.session))
+})
 
 app.post('/user',(req,res) => {
   console.log(req.body)
   if(req.body.username == myusername && req.body.password == mypassword){
-      session=req.session;
-      session.userid=req.body.username;
+      let see=req.session;
+      see.userid=req.body.username;
       console.log(req.session)
-      res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
+      //res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
       res.redirect("index.html")
   }
   else{
