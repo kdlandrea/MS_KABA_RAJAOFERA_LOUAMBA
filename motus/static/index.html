@@ -39,7 +39,7 @@
             <button type="new_word" class="new_word">New word</button>
         </form>
         <a href="score.html">
-            <button>Mon score</button>
+            <button>My score</button>
         </a> 
     </body> 
     <script>
@@ -78,6 +78,8 @@
                     for (var i = 0; i < mot_array.length; i++){//duppliquer un tab en JS
                         word_list[i] = mot_array[i];
                     }
+
+                    nb_tentative = 0 //on reset le nb de tentatives pour la nouvelle partie
                 });
             });
         
@@ -97,7 +99,7 @@
 
                 var t = document.getElementById("mytable")
                 var tr = t.getElementsByTagName("tr");
-                console.log(tr[1].getElementsByTagName("td"))
+                //console.log("Nb_tenta = "+nb_tentative)
                 var td = tr[nb_tentative].getElementsByTagName("td");
 
                 if(mot_array.length == test_array.length){
@@ -108,7 +110,7 @@
                             good++;
                         }
                         else if(word_list.includes(td[i].innerHTML)){
-                            console.log(word_list, td[i].innerHTML)
+                            //console.log(word_list, td[i].innerHTML)
                             td[i].style.backgroundColor = "yellow";
                             presque++;
                         }
