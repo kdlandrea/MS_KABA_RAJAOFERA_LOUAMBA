@@ -41,6 +41,7 @@
         <a href="score.html">
             <button>My score</button>
         </a> 
+        <button class="remove_data">Déconnexion</button>
     </body> 
     <script>
 
@@ -175,8 +176,19 @@
                 }
             });
 
-            
-            
+        if(!localStorage.getItem("username")){
+            document.location = "/login.html" //will help you redirect the user on the client side
+        }
+        else{
+            alert("Bonjour "+localStorage.username);
+        }
+        
+        document.querySelector(".remove_data")
+            .addEventListener('click', (e) => {
+              e.preventDefault()
+              localStorage.clear()
+              document.location = "/index.html"
+            });   
             
     </script>
 </html>
