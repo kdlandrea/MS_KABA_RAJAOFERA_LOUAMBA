@@ -35,21 +35,30 @@
               <label for="email">USERNAME</label>
               <div class="sec-2">
                 <ion-icon name="mail-outline"></ion-icon>
-                <input type="username"  class="username" name="username" placeholder="My username"/>
+                  <input type="username"  class="username" name="username" placeholder="My username"/>
               </div>
             </div>
             <a href="index.html"><button class="login">Login </button></a>
         </div>
 
     </body>
-
-
     <script>
         document.querySelector(".login")
             .addEventListener('click', (e) => {
               e.preventDefault()
               localStorage.setItem("username", $(".username").val())
-              document.location = "/index.html"
+
+              score_array = {}
+              score_array[$(".username").val()]={"score":0,"average":0} //initialisation
+              //console.log(score_array)
+              let json_data = JSON.stringify(score_array)
+              console.log(json_data)
+              $.post('/score',
+              json_data, function(json_data) {
+                  alert(json_data);
+              });
+              //document.location = "/index.html"
             });
+
     </script>
 </html>
