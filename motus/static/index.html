@@ -29,15 +29,26 @@
                     content += "</tr></table>" 
                     document.getElementById("grille").innerHTML = content;  
                 });
+
+
             </script>  
             <!-- <input type="submit" value="Submit"> -->
-            <button type="submit">Submit</button>
+            <button type="submit" class="submit">Submit</button>
         </form> 
+        <form>
+            <button type="new_word" class="new_word">New word</button>
+        </form>
         <a href="score.html">
-            <button>Mon score</button>
+            <button>My score</button>
         </a> 
+        <button class="remove_data">Déconnexion</button>
     </body> 
     <script>
+
+        var nb_tentative = 0;
+        score=  localStorage.score || 0;
+        list_tentative = []
+
         $.get('/127word',(mot)=> {
             mot=mot.trim();
             mot=mot.toUpperCase();
@@ -48,113 +59,136 @@
                 word_list[i] = mot_array[i];
             }
         });
-        var nb_tentative = 1;
-        score=0
-        list_tentative = []
 
-        document.querySelector('button')
+        document.querySelector(".new_word")
             .addEventListener('click', (e) => {
-                e.preventDefault();
-                const test = $("#test").val();
-                console.log(test);
-                const test_array = test.split('');
-              
-                function ecriture(test_array){
+                e.preventDefault()
+                $.get('/new_word',(mot)=> {
+                    mot=mot.trim();
+                    mot=mot.toUpperCase();                        
+                    mot_array = mot.split('');
+                    var content = "<table id='mytable'><tr>"
+                    content += "<td>"+mot_array[0]+"</td>";
+                    for(i=0; i<mot.length-1; i++){
+                       content += '<td>' + '.' + '</td>'; 
+                    }
+                    content += "</tr></table>" 
+                    document.getElementById("grille").innerHTML = content;  
+
+                    word_list = new Array();
+                    for (var i = 0; i < mot_array.length; i++){//duppliquer un tab en JS
+                        word_list[i] = mot_array[i];
+                    }
+
+                    nb_tentative = 0 //on reset le nb de tentatives pour la nouvelle partie
+                });
+            });
+        
+            function ecriture(test_array){
                     var content = "<tr><td>"+test_array[0].toUpperCase()+"</td>";
                     for(i=1; i<test_array.length; i++){
                         content += '<td>' + test_array[i].toUpperCase() + '</td>'; 
                     }
                     content += '</tr>'
                     $('#mytable').append(content);
-                }
+            }
 
-                function compare(mot_array, test_array, word_list, nb_tentative){
-                    var good = 0;
-                    var presque = 0;
-                    var bad = 0;
+            function compare(mot_array, test_array, word_list, nb_tentative){
+                var good = 0;
+                var presque = 0;
+                var bad = 0;
 
-                    var t = document.getElementById("mytable")
-                    var tr = t.getElementsByTagName("tr");
-                    var td = tr[nb_tentative].getElementsByTagName("td");
+                var t = document.getElementById("mytable")
+                var tr = t.getElementsByTagName("tr");
+                //console.log("Nb_tenta = "+nb_tentative)
+                var td = tr[nb_tentative].getElementsByTagName("td");
 
-                    if(mot_array.length == test_array.length){
-                        for (var i = 0; i < mot_array.length; i++) {
-                            if(mot_array[i] == td[i].innerHTML){
-                                td[i].style.backgroundColor = "green";
-                                delete word_list[i];
-                                good++;
-                            }
-                            else if(word_list.includes(td[i].innerHTML)){
-                                console.log(word_list, td[i].innerHTML)
-                                td[i].style.backgroundColor = "yellow";
-                                presque++;
-                            }
-                            else{
-                                td[i].style.backgroundColor = "red";
-                                bad++;
-                            }
+                if(mot_array.length == test_array.length){
+                    for (var i = 0; i < mot_array.length; i++) {
+                        if(mot_array[i] == td[i].innerHTML){
+                            td[i].style.backgroundColor = "green";
+                            delete word_list[i];
+                            good++;
                         }
-                        console.log(good);
-                        console.log(presque);
-                        console.log(bad);
-                        return good;
+                        else if(word_list.includes(td[i].innerHTML)){
+                            //console.log(word_list, td[i].innerHTML)
+                            td[i].style.backgroundColor = "yellow";
+                            presque++;
+                        }
+                        else{
+                            td[i].style.backgroundColor = "red";
+                            bad++;
+                        }
                     }
-                    
-                    else{
-                        alert("Les mots ne sont pas de la même longueur")
-                        console.log(mot_array.length , test_array.length);
-                        return -1;
-                    }
-                    //console.log(td[0].innerHTML)
+                    console.log(good);
+                    console.log(presque);
+                    console.log(bad);
+                    return good;
                 }
+                else{
+                    alert("Les mots ne sont pas de la même longueur")
+                    console.log(mot_array.length , test_array.length);
+                    return -1;
+                }
+                //console.log(td[0].innerHTML)
+            }
+
+
+            
+        
+        document.querySelector(".submit")
+            .addEventListener('click', (e) => {
+                e.preventDefault();
+                const test = $("#test").val();
+                console.log(test);
+                const test_array = test.split('');
 
                 ecriture(test_array)
+                nb_tentative+=1;
                 bons=compare(mot_array, test_array, word_list, nb_tentative);
                 
                 if(bons == mot_array.length){
                     alert("Bravo ! Vous avez trouvé le mot du jour !");
                     score++;
                     localStorage.setItem("score", score)
-                    if (!localStorage.getItem("average")) {//si average est vide
-
-                        nb_parties = list_tentative.length || 1 ;
-                        average = nb_tentative/nb_parties
-                    }
-                    else{
-                        old_list = localStorage.getItem("list_tentative")
-                        sum_old_nb_tentative = Array.isArray(old_list)
-                            ? old_list.reduce((partialSum, a) => partialSum + a, 0)
-                            : 0;
-                        //old_list.reduce((partialSum, a) => partialSum + a, 0);
-                        nb_parties = list_tentative.length || 1 ;
-                        average = ((nb_tentative+sum_old_nb_tentative)/nb_parties).toFixed(2)//2 chiffres ap la virgule
-                    }
-                    localStorage.setItem("average", average)
                     list_tentative = JSON.parse(localStorage.getItem('list_tentative')) || [];
                     list_tentative.push(nb_tentative)
                     localStorage.setItem("list_tentative", JSON.stringify(list_tentative))
+                    list_tentative = JSON.parse(localStorage.getItem('list_tentative'));
+
+                    if (!localStorage.getItem("average")) {//si average est vide
+                        sum_tentative = list_tentative[0]
+                    }
+                    else{
+                        //sommer toutes les tentatives depuis le début
+                        sum_old_nb_tentative = Array.isArray(list_tentative)
+                            ? list_tentative.reduce((partialSum, a) => partialSum + a, 0)
+                            : 0;
+                        //console.log("Nb tentatives d'avant = "+ sum_old_nb_tentative)
+                        sum_tentative = sum_old_nb_tentative
+                    }
+                    nb_parties = list_tentative.length || 1 ;
+                    average = ((sum_tentative)/nb_parties).toFixed(2)//2 chiffres ap la virgule
+                    localStorage.setItem("average", average)
                 }
                 else if(nb_tentative>5){
                     alert("Perdu ! Tentatives max dépassées");
                 }
-                else{
-                    nb_tentative+=1;
-                }
-                
-                //list_tentative = [list_tentative, ...[object]];
-                
-
-                // list_tentative = localStorage.list_tentative
-                // if(typeof list_tentative === 'undefined'){
-                //     list_tentative = []
-                // }
-                // else{
-                //     list_tentative = JSON.parse(localStorage.list_tentative)
-                //     list_tentative.append(nb_tentative)
-                //     //list_tentative[score]=nb_tentative
-                // }
             });
-            
+
+        if(!localStorage.getItem("username")){
+            document.location = "/login.html" //will help you redirect the user on the client side
+        }
+        else{
+            alert("Bonjour "+localStorage.username);
+        }
+        
+        document.querySelector(".remove_data")
+            .addEventListener('click', (e) => {
+              e.preventDefault()
+              localStorage.clear()
+              document.location = "/index.html"
+            });   
             
     </script>
 </html>
