@@ -1,10 +1,8 @@
 const express = require('express')
-const fs = require('fs') //file system
+const fs = require('fs'); //file system
+const { userInfo } = require('os');
 const app = express()
 const port = 3000
-
-// const port = process.env.PORT || 3000 
-// const os = require('os');
 const session = require('express-session')
 
 app.use(express.static('static'));
@@ -20,7 +18,7 @@ app.listen(port, () => {
 
 //username and password
 const myusername = 'user1'
-const mypassword = 'mypassword'
+const mypassword = 'mypassword1'
 
 // a variable to save a session
 app.use(session({
@@ -33,7 +31,38 @@ app.get('/session',(req,res)=>{
   res.send(JSON.stringify(req.session))
 })
 
-app.post('/user',(req,res) => {
+app.post('/register',(req,res) => {
+  console.log(req.body)
+  if(req.body.username && req.body.password){
+  console.log("enregistrement de l'utilisateur "+req.body.username+ " en BDD en cours.")
+  const newUsername = req.body.username
+  const newPassword = req.body.password
+  console.log("name : " + newUsername + " pwd :" + newPassword)
+  console.log("Checking if username already used")
+  // Checking if username already used
+  var authData = JSON.parse(fs.readFileSync("../data/auth_couples.json",'utf8'))
+  console.log("FOR LOOP \n")
+  for (var i=0;i<authData["auth"].users.length;i++){
+    console.log("value: "+ authData["auth"].users[i]);
+    if (authData["auth"].users[i]==req.body.username){
+      res.send("Username already used, go back on the previous page and use another username. =)")
+      return
+    }}
+
+  //Adding new infos to JSON file
+  console.log('Adding new infos to database: \n')
+  authData["auth"].users.push(newUsername)
+  authData["auth"].passwords.push(newPassword)
+  fs.writeFileSync('../data/auth_couples.json', JSON.stringify(authData))
+  res.redirect("login.html")
+  
+  }
+  else{
+  res.redirect("register.html")}
+})
+
+
+app.post('/login',(req,res) => {
   console.log(req.body)
   if(req.body.username == myusername && req.body.password == mypassword){
       let see=req.session;
@@ -43,7 +72,8 @@ app.post('/user',(req,res) => {
       res.redirect("index.html")
   }
   else{
-      res.send('Invalid username or password');
+      res.send('Sorry darling, invalid username or password :/');
+      res.redirect("login.html");
   }
 })
 
@@ -101,31 +131,3 @@ app.post('/index.html', function (req, res, next) {
 app.get('/index.html', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 })
-
-///////////////// Proxy TP
-// var http = require('http'); 
-// function serve(ip, port) {
-//   http.createServer(function (req, res) { 
-//     res.writeHead(200, {'Content-Type': 'text/plain'}); 
-//     res.write(JSON.stringify(req.headers));   
-//     res.end("\nThere's no place like "+ip+":"+port+"\n");         
-//   }).listen(port, ip);         
-//   console.log('Server running at http://'+ip+':'+port+'/'); 
-// } 
-//   // Create three servers for // the load balancer, listening on any // network on the following three ports 
-//   serve('0.0.0.0', 3000);
-//   serve('0.0.0.0', 3001);
-
-// app.get('/port', (req,res) => {
-//   res.send(os.hostname() + " port "+port)
-// })
-
-// app.listen(port, () => {
-//   console.log(`MOTUS APP working on ${os.hostname()} on port ${port}`)
-// });
-
-
-
-
-
-
