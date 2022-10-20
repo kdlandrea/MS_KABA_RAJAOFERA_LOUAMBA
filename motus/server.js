@@ -5,8 +5,10 @@ const port = 3000
 
 // const port = process.env.PORT || 3000 
 // const os = require('os');
+const session = require('express-session')
 
 app.use(express.static('static'));
+app.use(express.urlencoded({extended:false}));
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -14,6 +16,35 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
+})
+
+//username and password
+const myusername = 'user1'
+const mypassword = 'mypassword'
+
+// a variable to save a session
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}))
+
+app.get('/session',(req,res)=>{
+  res.send(JSON.stringify(req.session))
+})
+
+app.post('/user',(req,res) => {
+  console.log(req.body)
+  if(req.body.username == myusername && req.body.password == mypassword){
+      let see=req.session;
+      see.userid=req.body.username;
+      console.log(req.session)
+      //res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
+      res.redirect("index.html")
+  }
+  else{
+      res.send('Invalid username or password');
+  }
 })
 
 function randNv(){
@@ -33,6 +64,10 @@ function randNv(){
   return fourDigitNumber;
 }
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 fs.readFile(__dirname+'/../data/liste_francais_utf8.txt', 'utf8', (err, data) => {
   if (err) {
     console.error(err);
@@ -41,12 +76,22 @@ fs.readFile(__dirname+'/../data/liste_francais_utf8.txt', 'utf8', (err, data) =>
   //console.log(data);
   const lines = data.split('\n')
   app.get('/127word', (req, res) => {
-    const randnb = randNv();
+    randnb = randNv();
     const mot =lines[randnb]
-    //console.log(randnb);
+    console.log(randnb);
+    res.send(mot)
+  })
+
+  app.get('/new_word', (req, res) => {
+    randnb = getRandomInt(20000000)%lines.length;
+    const mot =lines[randnb]
+    console.log(randnb);
     res.send(mot)
   })
 })
+
+
+
 
 app.post('/index.html', function (req, res, next) {
   const mot_test = req.body;
