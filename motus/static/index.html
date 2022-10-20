@@ -29,15 +29,26 @@
                     content += "</tr></table>" 
                     document.getElementById("grille").innerHTML = content;  
                 });
+
+
             </script>  
             <!-- <input type="submit" value="Submit"> -->
-            <button type="submit">Submit</button>
+            <button type="submit" class="submit">Submit</button>
         </form> 
+        <form>
+            <button type="new_word" class="new_word">New word</button>
+        </form>
         <a href="score.html">
-            <button>Mon score</button>
+            <button>My score</button>
         </a> 
+        <button class="remove_data">Déconnexion</button>
     </body> 
     <script>
+
+        var nb_tentative = 0;
+        score=  localStorage.score || 0;
+        list_tentative = []
+
         $.get('/127word',(mot)=> {
             mot=mot.trim();
             mot=mot.toUpperCase();
@@ -48,65 +59,89 @@
                 word_list[i] = mot_array[i];
             }
         });
-        var nb_tentative = 0;
-        score=  localStorage.score || 0;
-        list_tentative = []
 
-        document.querySelector('button')
+        document.querySelector(".new_word")
             .addEventListener('click', (e) => {
-                e.preventDefault();
-                const test = $("#test").val();
-                console.log(test);
-                const test_array = test.split('');
-              
-                function ecriture(test_array){
+                e.preventDefault()
+                $.get('/new_word',(mot)=> {
+                    mot=mot.trim();
+                    mot=mot.toUpperCase();                        
+                    mot_array = mot.split('');
+                    var content = "<table id='mytable'><tr>"
+                    content += "<td>"+mot_array[0]+"</td>";
+                    for(i=0; i<mot.length-1; i++){
+                       content += '<td>' + '.' + '</td>'; 
+                    }
+                    content += "</tr></table>" 
+                    document.getElementById("grille").innerHTML = content;  
+
+                    word_list = new Array();
+                    for (var i = 0; i < mot_array.length; i++){//duppliquer un tab en JS
+                        word_list[i] = mot_array[i];
+                    }
+
+                    nb_tentative = 0 //on reset le nb de tentatives pour la nouvelle partie
+                });
+            });
+        
+            function ecriture(test_array){
                     var content = "<tr><td>"+test_array[0].toUpperCase()+"</td>";
                     for(i=1; i<test_array.length; i++){
                         content += '<td>' + test_array[i].toUpperCase() + '</td>'; 
                     }
                     content += '</tr>'
                     $('#mytable').append(content);
-                }
+            }
 
-                function compare(mot_array, test_array, word_list, nb_tentative){
-                    var good = 0;
-                    var presque = 0;
-                    var bad = 0;
+            function compare(mot_array, test_array, word_list, nb_tentative){
+                var good = 0;
+                var presque = 0;
+                var bad = 0;
 
-                    var t = document.getElementById("mytable")
-                    var tr = t.getElementsByTagName("tr");
-                    var td = tr[nb_tentative].getElementsByTagName("td");
+                var t = document.getElementById("mytable")
+                var tr = t.getElementsByTagName("tr");
+                //console.log("Nb_tenta = "+nb_tentative)
+                var td = tr[nb_tentative].getElementsByTagName("td");
 
-                    if(mot_array.length == test_array.length){
-                        for (var i = 0; i < mot_array.length; i++) {
-                            if(mot_array[i] == td[i].innerHTML){
-                                td[i].style.backgroundColor = "green";
-                                delete word_list[i];
-                                good++;
-                            }
-                            else if(word_list.includes(td[i].innerHTML)){
-                                console.log(word_list, td[i].innerHTML)
-                                td[i].style.backgroundColor = "yellow";
-                                presque++;
-                            }
-                            else{
-                                td[i].style.backgroundColor = "red";
-                                bad++;
-                            }
+                if(mot_array.length == test_array.length){
+                    for (var i = 0; i < mot_array.length; i++) {
+                        if(mot_array[i] == td[i].innerHTML){
+                            td[i].style.backgroundColor = "green";
+                            delete word_list[i];
+                            good++;
                         }
-                        console.log(good);
-                        console.log(presque);
-                        console.log(bad);
-                        return good;
+                        else if(word_list.includes(td[i].innerHTML)){
+                            //console.log(word_list, td[i].innerHTML)
+                            td[i].style.backgroundColor = "yellow";
+                            presque++;
+                        }
+                        else{
+                            td[i].style.backgroundColor = "red";
+                            bad++;
+                        }
                     }
-                    
-                    else{
-                        alert("Les mots ne sont pas de la même longueur")
-                        console.log(mot_array.length , test_array.length);
-                        return -1;
-                    }
-                    //console.log(td[0].innerHTML)
+                    console.log(good);
+                    console.log(presque);
+                    console.log(bad);
+                    return good;
                 }
+                else{
+                    alert("Les mots ne sont pas de la même longueur")
+                    console.log(mot_array.length , test_array.length);
+                    return -1;
+                }
+                //console.log(td[0].innerHTML)
+            }
+
+
+            
+        
+        document.querySelector(".submit")
+            .addEventListener('click', (e) => {
+                e.preventDefault();
+                const test = $("#test").val();
+                console.log(test);
+                const test_array = test.split('');
 
                 ecriture(test_array)
                 nb_tentative+=1;
@@ -140,7 +175,20 @@
                     alert("Perdu ! Tentatives max dépassées");
                 }
             });
-            
+
+        if(!localStorage.getItem("username")){
+            document.location = "/login.html" //will help you redirect the user on the client side
+        }
+        else{
+            alert("Bonjour "+localStorage.username);
+        }
+        
+        document.querySelector(".remove_data")
+            .addEventListener('click', (e) => {
+              e.preventDefault()
+              localStorage.clear()
+              document.location = "/index.html"
+            });   
             
     </script>
 </html>

@@ -35,7 +35,7 @@
               <label for="email">USERNAME</label>
               <div class="sec-2">
                 <ion-icon name="mail-outline"></ion-icon>
-                <input type="email" name="email" placeholder="My username"/>
+                <input type="username"  class="username" name="username" placeholder="My username"/>
               </div>
             </div>
             <a href="index.html"><button class="login">Login </button></a>
@@ -45,8 +45,11 @@
 
 
     <script>
-        //document.location = "/login.html" //will help you redirect the user on the client side
-        //localstorage.setItem("name", "Laurène")
-        //console.log(localstorage.getItem("name"))
+        document.querySelector(".login")
+            .addEventListener('click', (e) => {
+              e.preventDefault()
+              localStorage.setItem("username", $(".username").val())
+              document.location = "/index.html"
+            });
     </script>
 </html>

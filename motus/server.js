@@ -5,7 +5,6 @@ const app = express()
 const port = 3000
 const session = require('express-session')
 
-
 app.use(express.static('static'));
 app.use(express.urlencoded({extended:false}));
 
@@ -63,6 +62,10 @@ function randNv(){
   return fourDigitNumber;
 }
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 fs.readFile(__dirname+'/../data/liste_francais_utf8.txt', 'utf8', (err, data) => {
   if (err) {
     console.error(err);
@@ -71,12 +74,22 @@ fs.readFile(__dirname+'/../data/liste_francais_utf8.txt', 'utf8', (err, data) =>
   //console.log(data);
   const lines = data.split('\n')
   app.get('/127word', (req, res) => {
-    const randnb = randNv();
+    randnb = randNv();
     const mot =lines[randnb]
-    //console.log(randnb);
+    console.log(randnb);
+    res.send(mot)
+  })
+
+  app.get('/new_word', (req, res) => {
+    randnb = getRandomInt(20000000)%lines.length;
+    const mot =lines[randnb]
+    console.log(randnb);
     res.send(mot)
   })
 })
+
+
+
 
 app.post('/index.html', function (req, res, next) {
   const mot_test = req.body;
