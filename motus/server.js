@@ -37,11 +37,9 @@ app.post('/register',(req,res) => {
   console.log("enregistrement de l'utilisateur "+req.body.username+ " en BDD en cours.")
   const newUsername = req.body.username
   const newPassword = req.body.password
-  console.log("name : " + newUsername + " pwd :" + newPassword)
-  console.log("Checking if username already used")
+
   // Checking if username already used
   var authData = JSON.parse(fs.readFileSync("../data/auth_couples.json",'utf8'))
-  console.log("FOR LOOP \n")
   for (var i=0;i<authData["auth"].users.length;i++){
     console.log("value: "+ authData["auth"].users[i]);
     if (authData["auth"].users[i]==req.body.username){
@@ -64,17 +62,23 @@ app.post('/register',(req,res) => {
 
 app.post('/login',(req,res) => {
   console.log(req.body)
-  if(req.body.username == myusername && req.body.password == mypassword){
-      let see=req.session;
-      see.userid=req.body.username;
-      console.log(req.session)
-      //res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
-      res.redirect("index.html")
-  }
-  else{
-      res.send('Sorry darling, invalid username or password :/');
-      res.redirect("login.html");
-  }
+  var authData = JSON.parse(fs.readFileSync("../data/auth_couples.json",'utf8'))
+  isLoginOK = false;
+  for (var i=0;i<authData["auth"].users.length;i++){
+    if(req.body.username == authData["auth"].users[i] && req.body.password == authData["auth"].passwords[i]){
+        let see=req.session;
+        see.userid=req.body.username;
+        console.log(req.session);
+        isLoginOK = true;
+      }     
+    }
+    if(isLoginOK){
+      res.redirect("/index.html");
+    }else{
+      res.redirect('/login.html#incorectLogin')
+      console.log('Sorry darling, invalid username or password :/');
+    }
+
 })
 
 function randNv(){

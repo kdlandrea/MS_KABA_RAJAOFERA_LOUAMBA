@@ -176,12 +176,6 @@
                 }
             });
 
-        if(!localStorage.getItem("username")){
-            document.location = "/login.html" //will help you redirect the user on the client side
-        }
-        else{
-            alert("Hey there ! Welcome "+localStorage.username);
-        }
         
         document.querySelector(".remove_data")
             .addEventListener('click', (e) => {
