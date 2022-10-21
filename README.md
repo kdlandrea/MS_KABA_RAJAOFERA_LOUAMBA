@@ -65,3 +65,4 @@ sequenceDiagram
  ## Feature that could be implemented
  * Run the project with Docker
  * Use a reverse proxy
+ * Optimization of the score management
