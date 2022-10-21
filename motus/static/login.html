@@ -32,7 +32,6 @@
               </g>
             </svg>
             <div class="email">
-<<<<<<< HEAD
                 <form method="POST">
                     <label for="email">USERNAME</label>
                     <div class="sec-2">
@@ -42,32 +41,17 @@
                 </form>
             </div>
             <a href="index.html"><button type="submit" class="login">Login </button></a>
-=======
-              <label for="email">USERNAME</label>
-              <div class="sec-2">
-                <ion-icon name="mail-outline"></ion-icon>
-                <input type="username"  class="username" name="username" placeholder="My username"/>
-              </div>
-            </div>
-            <a href="index.html"><button class="login">Login </button></a>
->>>>>>> 25a7e709cec661843908327624ec147164afe418
         </div>
 
     </body>
 
 
     <script>
-<<<<<<< HEAD
-        //document.location = "/login.html" //will help you redirect the user on the client side
-        //localstorage.setItem("name", "Laurène")
-        //console.log(localstorage.getItem("name"))
-=======
         document.querySelector(".login")
             .addEventListener('click', (e) => {
               e.preventDefault()
               localStorage.setItem("username", $(".username").val())
               document.location = "/index.html"
             });
->>>>>>> 25a7e709cec661843908327624ec147164afe418
     </script>
 </html>
