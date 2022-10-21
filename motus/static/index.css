@@ -6,7 +6,6 @@ body {
 
 #grille
 {
-    background-color: rgb(0, 119, 199);
     color :rgb(255, 255, 255);
     font-family: "Roboto Medium", Ubuntu, Arial, Helvetica, sans-serif;
     font-size: 24px;
@@ -19,6 +18,7 @@ body {
 #grille table
 {
     border-spacing: 0px 0px;
+    background-color: rgb(0, 119, 199);
 }
 
 #grille td
