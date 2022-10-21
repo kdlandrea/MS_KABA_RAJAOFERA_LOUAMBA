@@ -124,10 +124,15 @@ function writeJSON(init){
 function addUser(name) {
   console.log('DEBUT FONCTION ADD')
   var users = require('../data/data_score.json')  
+  //console.log("Le blaze de ",users[0]["username"], name)
+  // if(users[0]["username"]==name){
+
+  // }
   const new_row = {
     username: name,
     score:0,
-    average:0
+    average:0,
+    tentative : []
   }
   users.push(new_row)
   json_users = JSON.stringify(users)
@@ -142,6 +147,18 @@ function readUsers() {
   const users = require('../data/data_score.json')  
   return users
 }
+
+// function updateUser(nb_id){
+//   const users = require('../data/data_score.json')  
+//   users[nb_id][]
+// }
+
+// app.post('/score_update', function (req, res, next) {
+//   console.log('/score_update')
+//   console.log(req.body.username)
+//   updateUser(req.body.username)
+// })
+
 
 app.post('/score', function (req, res, next) {
   console.log('/SCORE')

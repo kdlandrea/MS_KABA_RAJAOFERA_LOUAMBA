@@ -60,6 +60,23 @@
             }
         });
 
+        var nb_id = 0
+        var score_array = []
+        $.get('/score',(score_tab)=> {
+            console.log('Test recup score')
+            for(var i=0;i<score_tab.length;i++){
+                if(score_tab[i]['username']=='Ano'){
+                    console.log("J'ai trouvé "+ score_tab[i]['username'])
+                    nb_id = i
+                    break;
+                }
+                else{
+                    console.log("Pas trouvé")
+                }
+            }
+            score_array = score_tab
+        })
+
         document.querySelector(".new_word")
             .addEventListener('click', (e) => {
                 e.preventDefault()
@@ -150,15 +167,27 @@
                 if(bons == mot_array.length){
                     alert("Bravo ! Vous avez trouvé le mot du jour !");
                     score++;
-                    localStorage.setItem("score", score)
-                    list_tentative = JSON.parse(localStorage.getItem('list_tentative')) || [];
+                    score_array[nb_id]['score']=score
+                    list_tentative = score_array[nb_id]['tentative']|| [];
                     list_tentative.push(nb_tentative)
-                    localStorage.setItem("list_tentative", JSON.stringify(list_tentative))
-                    list_tentative = JSON.parse(localStorage.getItem('list_tentative'));
-
-                    if (!localStorage.getItem("average")) {//si average est vide
+                    score_array[nb_id]['tentative']=list_tentative
+                    list_tentative=score_array[nb_id]['tentative']
+                    if(score_array[nb_id]['average']==0){
                         sum_tentative = list_tentative[0]
                     }
+
+
+                    // localStorage.setItem("score", score)
+                    // list_tentative = JSON.parse(localStorage.getItem('list_tentative')) || [];
+                    // list_tentative.push(nb_tentative)
+                    // localStorage.setItem("list_tentative", JSON.stringify(list_tentative))
+                    // list_tentative = JSON.parse(localStorage.getItem('list_tentative'));
+
+                    // if (!localStorage.getItem("average")) {//si average est vide
+                    //     sum_tentative = list_tentative[0]
+                    // }
+
+
                     else{
                         //sommer toutes les tentatives depuis le début
                         sum_old_nb_tentative = Array.isArray(list_tentative)
@@ -169,11 +198,9 @@
                     }
                     nb_parties = list_tentative.length || 1 ;
                     average = ((sum_tentative)/nb_parties).toFixed(2)//2 chiffres ap la virgule
-                    localStorage.setItem("average", average)
-                    // $.get('/score',(map)=> {
-                    //     map.set($(".username").val(), [score,average]);
-                    //     console.log(map);
-                    // });
+                    //localStorage.setItem("average", average)
+                    score_array[nb_id]['average']=average
+                    console.log(score_array)
                 }
                 else if(nb_tentative>5){
                     alert("Perdu ! Tentatives max dépassées");
@@ -187,6 +214,8 @@
             alert("Bonjour "+localStorage.username);
         }
 
+
+
         
         
         document.querySelector(".remove_data")
@@ -198,18 +227,6 @@
               //TODO efface contenu du tableau
             });   
             
-        $.get('/score',(score_array)=> {
-            console.log('Test recup score')
-            //console.log(score_array[0]['username'])
-            for(var i=0;i<score_array.length;i++){
-                if(score_array[i]['username']=='Ano'){
-                    console.log("J'ai trouvé "+ score_array[i]['username'])
-                    break;
-                }
-                else{
-                    console.log("Pas trouvé")
-                }
-            }
-        })
+        
     </script>
 </html>
