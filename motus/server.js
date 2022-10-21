@@ -159,6 +159,7 @@ function readUsers() {
 //   updateUser(req.body.username)
 // })
 
+var loggedUser = ""
 
 app.post('/score', function (req, res, next) {
   console.log('/SCORE')
@@ -166,13 +167,16 @@ app.post('/score', function (req, res, next) {
   // let data = JSON.parse(req.body)
   // console.log(data)
   // writeJSON(req.body)
+  loggedUser= req.body.username
   addUser(req.body.username)
   res.redirect("index.html")
   //res.send(req.body);
 })
 
+
 app.get('/score', (req, res) => {//récupère le tableau de score
-  res.send(readUsers());
+  console.log("loggedUser: "+loggedUser)  
+  res.send({data:readUsers(),username: loggedUser});
 })
 
 

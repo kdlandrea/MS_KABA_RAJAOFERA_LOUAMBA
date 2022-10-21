@@ -46,7 +46,7 @@
     <script>
 
         var nb_tentative = 0;
-        score=  localStorage.score || 0;
+        score =  localStorage.score || 0;
         list_tentative = []
 
         $.get('/127word',(mot)=> {
@@ -62,11 +62,12 @@
 
         var nb_id = 0
         var score_array = []
-        $.get('/score',(score_tab)=> {
+        $.get('/score',(datas)=> {
             console.log('Test recup score')
-            for(var i=0;i<score_tab.length;i++){
-                if(score_tab[i]['username']=='Ano'){
-                    console.log("J'ai trouvé "+ score_tab[i]['username'])
+            console.log("username : " +datas["username"])
+            for(var i=0;i<datas["data"].length;i++){
+                if(datas["data"][i]['username']==datas["username"]){
+                    console.log("J'ai trouvé "+ datas['username'])
                     nb_id = i
                     break;
                 }
@@ -74,7 +75,7 @@
                     console.log("Pas trouvé")
                 }
             }
-            score_array = score_tab
+            score_array = datas["data"]
         })
 
         document.querySelector(".new_word")
