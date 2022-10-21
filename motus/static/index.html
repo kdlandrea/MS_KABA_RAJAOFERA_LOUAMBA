@@ -46,8 +46,10 @@
     <script>
 
         var nb_tentative = 0;
-        score=  localStorage.score || 0;
+        score = 0;
+        average = 0;
         list_tentative = []
+        sum_tentative = null
 
         $.get('/127word',(mot)=> {
             mot=mot.trim();
@@ -59,6 +61,24 @@
                 word_list[i] = mot_array[i];
             }
         });
+
+        var nb_id = 0
+        var score_array = []
+        $.get('/score',(datas)=> {
+            console.log('Test recup score')
+            console.log("username : " +datas["username"])
+            for(var i=0;i<datas["data"].length;i++){
+                if(datas["data"][i]['username']==datas["username"]){
+                    console.log("J'ai trouvé "+ datas['username'])
+                    nb_id = i
+                    break;
+                }
+                else{
+                    console.log("Pas trouvé")
+                }
+            }
+            score_array = datas["data"]
+        })
 
         document.querySelector(".new_word")
             .addEventListener('click', (e) => {
@@ -150,13 +170,12 @@
                 if(bons == mot_array.length){
                     alert("Bravo ! Vous avez trouvé le mot du jour !");
                     score++;
-                    localStorage.setItem("score", score)
-                    list_tentative = JSON.parse(localStorage.getItem('list_tentative')) || [];
+                    score_array[nb_id]['score']=score
+                    list_tentative = score_array[nb_id]['tentative']|| [];
                     list_tentative.push(nb_tentative)
-                    localStorage.setItem("list_tentative", JSON.stringify(list_tentative))
-                    list_tentative = JSON.parse(localStorage.getItem('list_tentative'));
-
-                    if (!localStorage.getItem("average")) {//si average est vide
+                    score_array[nb_id]['tentative']=list_tentative
+                    list_tentative=score_array[nb_id]['tentative']
+                    if(score_array[nb_id]['average']==0){
                         sum_tentative = list_tentative[0]
                     }
                     else{
@@ -169,21 +188,20 @@
                     }
                     nb_parties = list_tentative.length || 1 ;
                     average = ((sum_tentative)/nb_parties).toFixed(2)//2 chiffres ap la virgule
-                    localStorage.setItem("average", average)
-                    // $.get('/score',(map)=> {
-                    //     map.set($(".username").val(), [score,average]);
-                    //     console.log(map);
-                    // });
+                    score_array[nb_id]['average']=average
+                    console.log(score_array)
                 }
                 else if(nb_tentative>5){
                     alert("Perdu ! Tentatives max dépassées");
                 }
+
+                console.log("My score array: "+score_array)
+            if(sum_tentative){
+            $.post('/scoreUpdate',{sc:score_array[nb_id]['score'],av:score_array[nb_id]['average'],id:nb_id,t:nb_tentative}, function(){
+                alert({sc:score_array[nb_id]['score'],av:score_array[nb_id]['average'],id:nb_id, t:nb_tentative})
+            });}
             });
 
-        $.get('/score',(score_array)=> {
-            console.log(score_array)
-        })
-        
         document.querySelector(".remove_data")
             .addEventListener('click', (e) => {
               e.preventDefault()
@@ -193,18 +211,6 @@
               //TODO efface contenu du tableau
             });   
             
-        $.get('/score',(score_array)=> {
-            console.log('Test recup score')
-            //console.log(score_array[0]['username'])
-            for(var i=0;i<score_array.length;i++){
-                if(score_array[i]['username']=='Ano'){
-                    console.log("J'ai trouvé "+ score_array[i]['username'])
-                    break;
-                }
-                else{
-                    console.log("Pas trouvé")
-                }
-            }
-        })
+        
     </script>
 </html>
