@@ -109,7 +109,7 @@ app.get('/index.html', (req, res) => {
 function readJSON(){
   let fichier = fs.readFileSync('../data/data_score.json')
   let data = JSON.parse(fichier)
-  console.log("MES DATAS: " +data)
+  console.log("MES DATAS:" +data)
   return data
 }
 
