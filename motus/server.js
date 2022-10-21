@@ -109,7 +109,7 @@ app.get('/index.html', (req, res) => {
 function readJSON(){
   let fichier = fs.readFileSync('../data/data_score.json')
   let data = JSON.parse(fichier)
-  console.log(data)
+  console.log("MES DATAS: " +data)
   return data
 }
 
@@ -123,7 +123,7 @@ function writeJSON(init){
 
 function addUser(name) {
   console.log('DEBUT FONCTION ADD')
-  var users = require('../data/data_score.json')  
+  var users = readJSON()
   
   const new_row = {
     username: name,
@@ -153,16 +153,6 @@ function readUsers() {
   return users
 }
 
-// function updateUser(nb_id){
-//   const users = require('../data/data_score.json')  
-//   users[nb_id][]
-// }
-
-// app.post('/score_update', function (req, res, next) {
-//   console.log('/score_update')
-//   console.log(req.body.username)
-//   updateUser(req.body.username)
-// })
 
 var loggedUser = ""
 
@@ -185,11 +175,31 @@ app.get('/score', (req, res) => {//récupère le tableau de score
   res.send({data:datas,username: loggedUser});
 })
 
-function updateUser(id,score,average,){
+function updateUser(id,score,average,tentatives){
   var datas = JSON.parse(fs.readFileSync("../data/data_score.json","utf8"))
-  console.log("DATA BEFORE UPDATE: "+datas[id])
-  datas[id]['score'] = score
-  datas[id]['average'] = average
+  console.log("DATA BEFORE UPDATE: av "+datas[id]["average"] + "score"+datas[id]["score"])
+  console.log("taille tentative avant push: " + datas[id]['tentative'].length)
+  datas[id]['tentative'].push(parseFloat(tentatives))
+  console.log("taille tentative après push: " + datas[id]['tentative'].length)
+
+  if (parseFloat(datas[id]['average'])>0|| average>0){
+    console.log("IF AVERAGE > 0 :")
+    totalTentatives = 0
+    for (var i=0;i<datas[id]['tentative'].length;i++){
+      totalTentatives = totalTentatives + parseFloat(datas[id]['tentative'][i])
+    }
+    console.log("total Tentatives : " + totalTentatives)
+    newScore = datas[id]['score'] + 1
+    newAverage = parseFloat(totalTentatives/newScore)
+    console.log("[newScore, newAverage] = "+ [newScore,newAverage])
+    datas[id]['score'] = newScore
+    datas[id]['average'] = newAverage
+
+  } else {
+    console.log("ELSE AV =0")
+    datas[id]['score'] = parseFloat(score)
+    datas[id]['average'] = parseFloat(average)
+  }
   let donnees = JSON.stringify(datas)
   fs.writeFile('../data/data_score.json', donnees, function(erreur) {
     if (erreur) {
@@ -201,11 +211,12 @@ function updateUser(id,score,average,){
 app.post('/scoreUpdate', (req, res) => {//récupère le tableau de score  
   console.log('scoreUpdate \n')
   console.log(req.body)
-  console.log("\n id :"+req.body['id']+ " score : "+req.body['sc']+" average : "+req.body['av'] )
+  console.log("\n id :"+req.body['id']+ " score : "+req.body['sc']+" average : "+req.body['av'] + " tentatives: "+ req.body['t'] )
   var index = req.body['id']
   var newScore = req.body['sc']
   var newAverage = req.body['av']
-  updateUser(index,newScore,newAverage)
+  var newTentatives = req.body['t']
+  updateUser(id=index,score=newScore,average=newAverage,tentatives=newTentatives)
 })
 
 
