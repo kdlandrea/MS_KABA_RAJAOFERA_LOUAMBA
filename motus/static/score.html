@@ -5,9 +5,9 @@
         <meta charset="UTF-8">
         <link rel="stylesheet" href="score.css" />
         <script
-			  src="https://code.jquery.com/jquery-3.6.1.min.js"
-			  integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
-			  crossorigin="anonymous"></script>
+              src="https://code.jquery.com/jquery-3.6.1.min.js"
+              integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+              crossorigin="anonymous"></script>
     </head>
     <body>
         <table>
@@ -37,13 +37,13 @@
         //localStorage.setItem("score", "500");
         //localStorage.clear();
         //localStorage.removeItem("score");
-        if (localStorage.length > 0) {
-            $("#score").html(localStorage.score)
-            $("#average").html(localStorage.average)
-        } 
-        else {
-            $("#score").html("0") // change value
-        }
+        // if (localStorage.length > 0) {
+        //     $("#score").html(localStorage.score)
+        //     $("#average").html(localStorage.average)
+        // } 
+        // else {
+        //     $("#score").html("0") // change value
+        // }
 
         //session storage 
         // sessionStorage.setItem("score", "600");
@@ -53,5 +53,27 @@
         // else {
         //     $("#score").html("0") // change value
         // }
+
+        //TODO récupère score du tableau et les afficher sur la page
+        var nb_id = 0
+        $.get('/score',(datas)=> {
+            console.log('Recup score in score.html')
+            console.log("username : " +datas["username"])
+            
+            if (datas["data"].length > 0) {
+                for(var i=0; i<datas["data"].length;i++){
+                    if(datas["data"][i]["username"]==datas["username"]){
+                        nb_id=i
+                        break;
+                    }
+                }
+                console.log(datas["data"][nb_id])
+                $("#score").html(datas["data"][nb_id]["score"])
+                $("#average").html(datas["data"][nb_id]["average"])
+            }
+            else {
+                $("#score").html("0") // change value
+            }
+        })
     </script>
 </html>
