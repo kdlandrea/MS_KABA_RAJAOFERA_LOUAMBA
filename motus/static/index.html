@@ -10,38 +10,38 @@
 			  crossorigin="anonymous"></script> <!--Librairie JQuery-->
     </head>
     <body>
-            <h1> Motus </h1>
-            <form action="index.html" method="POST">
-                <label for="test">Mon mot :</label><br>
-                <input type="text" id="test" name="test"><br>
-                <div id="grille" class="grille"></div>
-                <script>
-                    //Initialisation
-                    $.get('/127word',(mot)=> {
-                        mot=mot.trim();
-                        mot=mot.toUpperCase();
-                        mot_array = mot.split('');
-                        var content = "<table id='mytable'><tr>"
-                        content += "<td>"+mot_array[0]+"</td>";
-                        for(i=0; i<mot.length-1; i++){
-                            content += '<td>' + '.' + '</td>'; 
-                        }
-                        content += "</tr></table>" 
-                        document.getElementById("grille").innerHTML = content;  
-                    });
+        <h1> Motus </h1>
+        <form action="index.html" method="POST">
+            <label for="test">Mon mot :</label><br>
+            <input type="text" id="test" name="test"><br>
+            <div id="grille" class="grille"></div>
+            <script>
+                //Initialisation
+                $.get('/127word',(mot)=> {
+                    mot=mot.trim();
+                    mot=mot.toUpperCase();
+                    mot_array = mot.split('');
+                    var content = "<table id='mytable'><tr>"
+                    content += "<td>"+mot_array[0]+"</td>";
+                    for(i=0; i<mot.length-1; i++){
+                        content += '<td>' + '.' + '</td>'; 
+                    }
+                    content += "</tr></table>" 
+                    document.getElementById("grille").innerHTML = content;  
+                });
 
 
-                </script>  
-                <!-- <input type="submit" value="Submit"> -->
-                <button type="submit" class="submit">Submit</button>
-            </form> 
-            <form>
-                <button type="new_word" class="new_word">New word</button>
-            </form>
-            <a href="score.html">
-                <button>My score</button>
-            </a> 
-            <button class="remove_data">Déconnexion</button>
+            </script>  
+            <!-- <input type="submit" value="Submit"> -->
+            <button type="submit" class="submit">Submit</button>
+        </form> 
+        <form>
+            <button type="new_word" class="new_word">New word</button>
+        </form>
+        <a href="score.html">
+            <button>My score</button>
+        </a> 
+        <button class="remove_data">Déconnexion</button>
     </body> 
     <script>
 
@@ -61,9 +61,6 @@
                 word_list[i] = mot_array[i];
             }
         });
-        var nb_tentative = 0;
-        score=  localStorage.score || 0;
-        list_tentative = []
 
         var nb_id = 0
         var score_array = []
@@ -85,20 +82,36 @@
 
         document.querySelector(".new_word")
             .addEventListener('click', (e) => {
-                e.preventDefault();
-                const test = $("#test").val();
-                console.log(test);
-                const test_array = test.split('');
-              
-                function ecriture(test_array){
-                    console.log(test_array)
+                e.preventDefault()
+                $.get('/new_word',(mot)=> {
+                    mot=mot.trim();
+                    mot=mot.toUpperCase();                        
+                    mot_array = mot.split('');
+                    var content = "<table id='mytable'><tr>"
+                    content += "<td>"+mot_array[0]+"</td>";
+                    for(i=0; i<mot.length-1; i++){
+                       content += '<td>' + '.' + '</td>'; 
+                    }
+                    content += "</tr></table>" 
+                    document.getElementById("grille").innerHTML = content;  
+
+                    word_list = new Array();
+                    for (var i = 0; i < mot_array.length; i++){//duppliquer un tab en JS
+                        word_list[i] = mot_array[i];
+                    }
+
+                    nb_tentative = 0 //on reset le nb de tentatives pour la nouvelle partie
+                });
+            });
+        
+            function ecriture(test_array){
                     var content = "<tr><td>"+test_array[0].toUpperCase()+"</td>";
                     for(i=1; i<test_array.length; i++){
                         content += '<td>' + test_array[i].toUpperCase() + '</td>'; 
                     }
                     content += '</tr>'
                     $('#mytable').append(content);
-                }
+            }
 
             function compare(mot_array, test_array, word_list, nb_tentative){
                 var good = 0;
@@ -139,8 +152,10 @@
                 }
                 //console.log(td[0].innerHTML)
             }
-        });
 
+
+            
+        
         document.querySelector(".submit")
             .addEventListener('click', (e) => {
                 e.preventDefault();
