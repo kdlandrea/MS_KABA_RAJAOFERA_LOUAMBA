@@ -8,17 +8,10 @@ const session = require('express-session')
 app.use(express.static('static'));
 app.use(express.urlencoded({extended:false}));
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-//username and password
-const myusername = 'user1'
-const mypassword = 'mypassword1'
 
 // a variable to save a session
 app.use(session({
