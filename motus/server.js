@@ -124,17 +124,21 @@ function writeJSON(init){
 function addUser(name) {
   console.log('DEBUT FONCTION ADD')
   var users = require('../data/data_score.json')  
-  //console.log("Le blaze de ",users[0]["username"], name)
-  // if(users[0]["username"]==name){
-
-  // }
+  
   const new_row = {
     username: name,
     score:0,
     average:0,
     tentative : []
   }
-  users.push(new_row)
+  var myBoolean = false
+  for (var i=0; i < users.length; i++){
+    if (users[i]["username"] == name){
+      myBoolean = true
+    }
+  }
+  if (myBoolean == false){
+    users.push(new_row)}
   json_users = JSON.stringify(users)
   fs.writeFile('../data/data_score.json',json_users,function(erreur){
       if(erreur){
@@ -142,6 +146,7 @@ function addUser(name) {
       }
   })
 }
+
 
 function readUsers() {
   const users = require('../data/data_score.json')  
@@ -176,9 +181,32 @@ app.post('/score', function (req, res, next) {
 
 app.get('/score', (req, res) => {//récupère le tableau de score
   console.log("loggedUser: "+loggedUser)  
-  res.send({data:readUsers(),username: loggedUser});
+  var datas = JSON.parse(fs.readFileSync("../data/data_score.json","utf8"))
+  res.send({data:datas,username: loggedUser});
 })
 
+function updateUser(id,score,average,){
+  var datas = JSON.parse(fs.readFileSync("../data/data_score.json","utf8"))
+  console.log("DATA BEFORE UPDATE: "+datas[id])
+  datas[id]['score'] = score
+  datas[id]['average'] = average
+  let donnees = JSON.stringify(datas)
+  fs.writeFile('../data/data_score.json', donnees, function(erreur) {
+    if (erreur) {
+      console.log(erreur)}
+  })
+  console.log("DATA AFTER UPDATE: "+ datas[id])
+}
+  
+app.post('/scoreUpdate', (req, res) => {//récupère le tableau de score  
+  console.log('scoreUpdate \n')
+  console.log(req.body)
+  console.log("\n id :"+req.body['id']+ " score : "+req.body['sc']+" average : "+req.body['av'] )
+  var index = req.body['id']
+  var newScore = req.body['sc']
+  var newAverage = req.body['av']
+  updateUser(index,newScore,newAverage)
+})
 
 
 ///////////////// Proxy TP

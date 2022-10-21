@@ -46,7 +46,8 @@
     <script>
 
         var nb_tentative = 0;
-        score =  localStorage.score || 0;
+        score = 0;
+        average = 0;
         list_tentative = []
 
         $.get('/127word',(mot)=> {
@@ -206,6 +207,12 @@
                 else if(nb_tentative>5){
                     alert("Perdu ! Tentatives max dépassées");
                 }
+
+                console.log("My score array: "+score_array)
+
+        $.post('/scoreUpdate',{sc:score,av:average,id:nb_id}, function(){
+            alert({sc:score,av:average,id:nb_id})
+        });
             });
 
         if(!localStorage.getItem("username")){ //TODO replace by JSON array
@@ -214,8 +221,6 @@
         else{
             alert("Bonjour "+localStorage.username);
         }
-
-
 
         
         
