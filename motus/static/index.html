@@ -111,7 +111,7 @@
                             good++;
                         }
                         else if(word_list.includes(td[i].innerHTML)){
-                            //console.log(word_list, td[i].innerHTML)
+                            console.log(word_list, td[i].innerHTML)
                             td[i].style.backgroundColor = "yellow";
                             presque++;
                         }
@@ -170,18 +170,27 @@
                     nb_parties = list_tentative.length || 1 ;
                     average = ((sum_tentative)/nb_parties).toFixed(2)//2 chiffres ap la virgule
                     localStorage.setItem("average", average)
+                    // $.get('/score',(map)=> {
+                    //     map.set($(".username").val(), [score,average]);
+                    //     console.log(map);
+                    // });
                 }
                 else if(nb_tentative>5){
                     alert("Perdu ! Tentatives max dépassées");
                 }
             });
 
+        $.get('/score',(score_array)=> {
+            console.log(score_array)
+        })
         
         document.querySelector(".remove_data")
             .addEventListener('click', (e) => {
               e.preventDefault()
               localStorage.clear()
               document.location = "/index.html"
+
+              //TODO efface contenu du tableau
             });   
             
     </script>

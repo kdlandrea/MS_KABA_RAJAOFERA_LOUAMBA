@@ -48,4 +48,23 @@
            
         </div>
     </body>
+    <script>
+        document.querySelector(".login")
+            .addEventListener('click', (e) => {
+              e.preventDefault()
+              localStorage.setItem("username", $(".username").val())
+
+              score_array = {}
+              score_array[$(".username").val()]={"score":0,"average":0} //initialisation
+              //console.log(score_array)
+              let json_data = JSON.stringify(score_array)
+              console.log(json_data)
+              $.post('/score',
+              json_data, function(json_data) {
+                  alert(json_data);
+              });
+              //document.location = "/index.html"
+            });
+
+    </script>
 </html>

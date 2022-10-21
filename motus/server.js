@@ -112,19 +112,17 @@ fs.readFile(__dirname+'/../data/liste_francais_utf8.txt', 'utf8', (err, data) =>
   app.get('/127word', (req, res) => {
     randnb = randNv();
     const mot =lines[randnb]
-    console.log(randnb);
+    //console.log(randnb);
     res.send(mot)
   })
 
   app.get('/new_word', (req, res) => {
     randnb = getRandomInt(20000000)%lines.length;
     const mot =lines[randnb]
-    console.log(randnb);
+    //console.log(randnb);
     res.send(mot)
   })
 })
-
-
 
 
 app.post('/index.html', function (req, res, next) {
@@ -135,3 +133,58 @@ app.post('/index.html', function (req, res, next) {
 app.get('/index.html', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 })
+
+
+// app.post('/login.html', (req, res) => {//envoi le login
+//   var map = new Map();
+//   res.send(req.body)
+// })
+
+function readJSON(){
+  let fichier = fs.readFileSync('../data/data_score.json')
+  let data = JSON.parse(fichier)
+  console.log(data)
+  return data
+}
+
+function writeJSON(init){
+  let donnees = JSON.stringify(init)
+  fs.writeFile('../data/data_score.json', donnees, function(erreur) {
+    if (erreur) {
+      console.log(erreur)}
+  })
+}
+
+app.post('/score', function (req, res, next) {
+  console.log(req.body)
+  writeJSON(req.body)
+  res.send(req.body);
+})
+
+app.get('/score', (req, res) => {//récupère le tableau de score
+  res.send(readJSON());
+})
+
+
+
+///////////////// Proxy TP
+// var http = require('http'); 
+// function serve(ip, port) {
+//   http.createServer(function (req, res) { 
+//     res.writeHead(200, {'Content-Type': 'text/plain'}); 
+//     res.write(JSON.stringify(req.headers));   
+//     res.end("\nThere's no place like "+ip+":"+port+"\n");         
+//   }).listen(port, ip);         
+//   console.log('Server running at http://'+ip+':'+port+'/'); 
+// } 
+//   // Create three servers for // the load balancer, listening on any // network on the following three ports 
+//   serve('0.0.0.0', 3000);
+//   serve('0.0.0.0', 3001);
+
+// app.get('/port', (req,res) => {
+//   res.send(os.hostname() + " port "+port)
+// })
+
+// app.listen(port, () => {
+//   console.log(`MOTUS APP working on ${os.hostname()} on port ${port}`)
+// });
