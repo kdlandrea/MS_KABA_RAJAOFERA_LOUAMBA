@@ -193,5 +193,18 @@
               //TODO efface contenu du tableau
             });   
             
+        $.get('/score',(score_array)=> {
+            console.log('Test recup score')
+            //console.log(score_array[0]['username'])
+            for(var i=0;i<score_array.length;i++){
+                if(score_array[i]['username']=='Ano'){
+                    console.log("J'ai trouvé "+ score_array[i]['username'])
+                    break;
+                }
+                else{
+                    console.log("Pas trouvé")
+                }
+            }
+        })
     </script>
 </html>

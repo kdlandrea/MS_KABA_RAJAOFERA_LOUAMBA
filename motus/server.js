@@ -155,14 +155,41 @@ function writeJSON(init){
   })
 }
 
+function addUser(name) {
+  console.log('DEBUT FONCTION ADD')
+  var users = require('../data/data_score.json')  
+  const new_row = {
+    username: name,
+    score:0,
+    average:0
+  }
+  users.push(new_row)
+  json_users = JSON.stringify(users)
+  fs.writeFile('../data/data_score.json',json_users,function(erreur){
+      if(erreur){
+      console.log(erreur)
+      }
+  })
+}
+
+function readUsers() {
+  const users = require('../data/data_score.json')  
+  return users
+}
+
 app.post('/score', function (req, res, next) {
-  console.log(req.body)
-  writeJSON(req.body)
-  res.send(req.body);
+  console.log('/SCORE')
+  console.log(req.body.username)
+  // let data = JSON.parse(req.body)
+  // console.log(data)
+  // writeJSON(req.body)
+  addUser(req.body.username)
+  res.redirect("index.html")
+  //res.send(req.body);
 })
 
 app.get('/score', (req, res) => {//récupère le tableau de score
-  res.send(readJSON());
+  res.send(readUsers());
 })
 
 

@@ -53,15 +53,17 @@
             .addEventListener('click', (e) => {
               e.preventDefault()
               localStorage.setItem("username", $(".username").val())
-
+              username = $(".username").val()
               score_array = {}
               score_array[$(".username").val()]={"score":0,"average":0} //initialisation
               //console.log(score_array)
-              let json_data = JSON.stringify(score_array)
-              console.log(json_data)
+              //let json_data = JSON.stringify(score_array)
+              //console.log(json_data)
               $.post('/score',
-              json_data, function(json_data) {
-                  alert(json_data);
+              {username}, function(username) {
+                  console.log("POST score")
+                  document.location = "/index.html"
+                  //alert(score_array);
               });
               //document.location = "/index.html"
             });
